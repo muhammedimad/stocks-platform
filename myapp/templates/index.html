@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dropdown" style="float: left; padding: 13px">
+        <a href="#" id="noti-btn" onclick="return false;" role="button" data-toggle="dropdown" id="dropdownMenu1" data-target="#" style="float: left" aria-expanded="true">
+            <i class="fa fa-bell-o" style="font-size: 20px; float: left; color: black">
+            </i>
+        </a>
+        <span class="badge badge-danger" id="12345">{{ notifs|length}}</span>
+        <ul class="dropdown-menu dropdown-menu-left pull-right" role="menu" aria-labelledby="dropdownMenu1">
+            <li role="presentation">
+                <a href="#" class="dropdown-menu-header">Notifications</a>
+            </li>
+            <ul class="timeline timeline-icons timeline-sm" style="margin:10px;width:210px">
+            {% for noti in notifs %}
+                <li>
+                <p>
+                    {{noti.message}} <a href="">here</a>
+                    <span class="timeline-icon"><i class="fa fa-file-pdf-o" style="color:red"></i></span>
+                    <span class="timeline-date">{{noti.created_date}}</span>
+                </p>
+            </li>
+            {% endfor %}
+            
+        </ul>
+            <li role="presentation">
+                <a href="#" class="dropdown-menu-header"></a>
+            </li>
+        </ul>
+    </div>
+
+    <div>
+    <form action="" method="get">
+        <input type="text" class="form-control" name="search" id="id_q" placeholder="Search by symbol or name...">
+    </form>
+
+    </div>
+
+
+    <table class="table table-hover data-table">
+        <tr style="background-color: rgb(217, 222, 236); font-size:120%; font-style: oblique">
+            <th>#</th>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th></th>
+            <th>Change</th>
+            <th>Follow</th>
+        </tr>
+        
+        {% for stock in data %}
+            <tr >
+
+                <td class="clickable-row" data-href="/stock/{{ stock.symbol }}" style="font-weight: bolder">{{ forloop.counter }}.</td>
+                <td class="clickable-row" data-href="/stock/{{ stock.symbol }}" style="color: rgb(46, 46, 65); font-style: italic; font-weight: bold">{{ stock.symbol }}</td>
+                <td class="clickable-row" data-href="/stock/{{ stock.symbol }}">{{ stock.name }}</td>
+                <td class="clickable-row" data-href="/stock/{{ stock.symbol }}">{{ stock.price|floatformat:2 }}</td>
+                <td class="clickable-row" data-href="/stock/{{ stock.symbol }}">
+                    {% if stock.change_percent >= 0 %}
+                        <i style="color: green; font-size:200%" class="fa fa-long-arrow-up"></i>
+                    {% else %}
+                       <i  style="color: rgb(202, 26, 26); font-size:200%" class="fa fa-long-arrow-down"></i>
+                    {% endif %}
+                
+                </td>
+                <!-- <td class="
+                {% if stock.change_percent >= 0 %}
+                    text-success
+                {% else %}
+                    text-danger
+                {% endif %}
+                ">{{ stock.change_percent|floatformat:2 }}%</td> -->
+                {% if stock.change_percent >= 0 %}
+                    <td style="color: green">{{ stock.change_percent|floatformat:2 }}% </td>
+                {% else %}
+                    <td style="color: red">{{ stock.change_percent|floatformat:2 }}%</td>
+                {% endif %}
+
+                <td><button class="btn success">+</button></td>
+            </tr>
+            
+        {% endfor %}
+
+    </table>
+
+
+<script type="text/javascript">
+    document.getElementById("id_q").value = "{{query}}"
+    </script>
+
+<!-- <script type="text/javascript">
+    document.getElementById("12345").textContent = '{{ notif|length }}'
+
+</script> -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+		<script>
+
+$(document).ready( function(notifs) {
+    $("#noti-btn").click(function(event){
+
+		$.ajax({
+            url: '',
+            datatype: 'json',
+            type: 'GET',
+            success: function(notifs) {
+				
+				console.log(JSON.parse("{{notifs|safe}}"))
+                
+					
+            }
+        });
+		})})
+		
+    </script>
+    
+{% endblock %}  
+ <!-- <script type="text/javascript"> -->
+<!--     
+// console.log(s)
+    
+// $(document).ready( function() {
+    
+//     $("#noti-btn").click(function(event) {
+        
+//         $.ajax({
+//     url: '',
+//     datatype: 'json',
+//     type: 'GET',
+//     success: function(data) {
+        
+            
+//     }
+// });
+// })})
+     
+// </script>  -->

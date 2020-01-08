@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+{% load static %}
+
+{#This data needs to be changed as needed#}
+{% block content %}
+    <meta charset="utf-8" />
+    <title>
+        {% block title %}
+       Compare
+        {% endblock title %}
+    </title>
+
+    <head>
+        <style>
+            body {
+                background-color: #d9e6d1;
+            }
+
+            h1 {
+                color: #ff000a;
+            }
+
+            p {
+                color: rgba(25, 25, 25, 0.99);
+
+            }
+
+            .button {
+                display: inline-block;
+                padding: 5px 15px;
+                font-size: 12px;
+                cursor: pointer;
+                text-align: center;
+                text-decoration: none;
+                outline: none;
+                color: #fff;
+                background-color: #4CAF50;
+                border: none;
+                border-radius: 15px;
+                box-shadow: 0 9px rgba(230, 228, 228, 0.58);
+            }
+
+            .button:hover {
+                background-color: #3e8e41
+            }
+
+            .button:active {
+                background-color: #3e8e41;
+                box-shadow: 0 5px #666;
+                transform: translateY(4px);
+            }
+
+            .card {
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+                transition: 0.3s;
+                width: 33%;
+                border-radius: 25px;
+
+            }
+
+            .card:hover {
+                box-shadow: 0 8px 16px 0 rgba(230, 0, 13, 0.2);
+            }
+
+            .container {
+                padding: 2px 16px;
+            }
+
+
+        </style>
+    </head>
+    <div id="white" class="col-md-12 text-left">
+        <h2 style="font-size: 2vw">Comparing Two Stocks</h2>
+    </div>
+
+    <div id=main class="row">
+
+             <div class="container" style="float: right">
+                <p style="font-size: 1vw">Please Enter the symbol of the two stocks:</p>
+                <input type="text" style="border-radius: 5px; width: 10vw" placeholder="Symbol1" id="stock-symbol1"
+                       name="symbol1"/>
+                <input type="text" style="border-radius: 5px; width: 10vw" placeholder="Symbol2" id="stock-symbol2"
+                       name="symbol2"/>
+                <input style="margin-top: 1vw;margin-bottom: 1vw" onclick="getSymbol()" type="button" class="button"
+                       value="View Details"/>
+            </div>
+        <div class="card">
+            <p style="margin-top: 10px; color: rgba(101,100,100,0.97)">Latest Price</p>
+            <canvas id="graph" style="margin-bottom: 2vw; margin-top: 0vw"></canvas>
+        </div>
+
+        <div class="card" style="display: inline; margin-left: 2vw">
+            <p style="margin-top: 10px; color: rgba(101,100,100,0.97)">Change</p>
+            <canvas id="graph2" style="margin-bottom: 0vw; margin-top: 2vw"></canvas>
+            <div class="container">
+            </div>
+        </div>
+
+
+    </div>
+
+    </div>
+
+{% endblock content %}
+
+{% block scripts %}
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'></script>
+    <script>
+
+        var charty1;
+        var charty2;
+        const compsymbol = new Array();
+        const compprofit = new Array();
+        const compchange = new Array();
+        const temp = new Array(0);
+
+
+        $(document).ready(function () {
+            charty1 = builder(temp, temp);
+            charty2 = builder2(temp, temp);
+        });
+
+        builder(temp, temp);
+        builder2(temp, temp);
+
+        function getSymbol() {
+            charty1.destroy();
+            charty2.destroy();
+
+            const x1 = document.getElementById('stock-symbol1').value;
+            const x2 = document.getElementById('stock-symbol2').value;
+            urlA = `https://sandbox.iexapis.com/stable/stock/${x1}/quote?token=Tpk_087a52e2547e449e9cee8748f00491eb`;
+            urlB = `https://sandbox.iexapis.com/stable/stock/${x2}/quote?token=Tpk_087a52e2547e449e9cee8748f00491eb`;
+            fetch();
+            window.setTimeout(() => {
+                charty1 = builder(compsymbol, compprofit);
+            }, 50);
+            window.setTimeout(() => {
+                charty2 = builder2(compsymbol, compchange);
+            }, 50);
+            window.setTimeout(() => {
+                free(compprofit, compsymbol,compchange);
+            }, 60);
+        }
+
+        function free(ar1, ar2,ar3) {
+            ar1.length = 0;
+            ar2.length = 0;
+            ar3.length = 0;
+        }
+
+        function fetch() {
+            $.ajax({
+                method: "GET",
+                url: urlA,
+                dataType: 'json',
+                success: onSucess1,
+                error: onError1
+            });
+
+            $.ajax({
+                method: "GET",
+                url: urlB,
+                dataType: 'json',
+                success: onSucess2,
+                error: onError2
+            });
+        }
+
+        function onSucess1(jsonReturn) {
+
+            const symbol = jsonReturn.symbol;
+            const latestPrice = jsonReturn.latestPrice;
+            const change = jsonReturn.change;
+            compchange.push(change);
+            compsymbol.push(symbol);
+            console.log(symbol);
+            compprofit.push(latestPrice);
+
+        }
+
+        function onError1() {
+            $("#test").html("i failed.");
+        }
+
+        function onSucess2(jsonReturn) {
+
+            const symbol = jsonReturn.symbol;
+            const latestPrice = jsonReturn.latestPrice;
+            const change = jsonReturn.change;
+            compchange.push(change);
+            compsymbol.push(symbol);
+            console.log(symbol);
+            compprofit.push(latestPrice);
+        }
+
+        function onError2() {
+            $("#test2").html("i failed.");
+        }
+
+
+        function builder(names, data) {
+            const ctx = document.getElementById("graph");
+            const graphData = {
+                labels: names,
+                datasets: [{
+                    data: data,
+                    label: "Latest Price",
+                    backgroundColor: [
+                        "rgba(255, 0, 0, 0.5)",
+                        "rgba(100, 255, 0, 0.5)",
+                        "rgba(200, 50, 255, 0.5)",
+                        "rgba(0, 100, 255, 0.5)"
+                    ]
+                }],
+                options: {
+                    responsive: true, // Instruct chart JS to respond nicely.
+                    maintainAspectRatio: false, // Add to prevent default behavior of full-width/height
+
+                }
+            };
+
+
+            if (polarAreaChart != undefined || polarAreaChart != null) {
+                polarAreaChart.destroy();
+            }
+            var polarAreaChart = new Chart(ctx, {
+                type: 'polarArea',
+                data: graphData
+            });
+            return polarAreaChart;
+
+        }
+
+
+        function builder2(names, data) {
+            const ctx = document.getElementById("graph2");
+            const graphData = {
+                labels: names,
+                datasets: [{
+                    data: data,
+                    label:'Change',
+                    backgroundColor: [
+                        "rgba(255, 0, 0, 0.5)",
+                        "rgba(100, 255, 0, 0.5)",
+                    ]
+                }],
+                options: {
+                    responsive: true, // Instruct chart JS to respond nicely.
+                    maintainAspectRatio: false, // Add to prevent default behavior of full-width/height
+
+                }
+            };
+
+
+            if (polarAreaChart != undefined || polarAreaChart != null) {
+                polarAreaChart.destroy();
+            }
+            var polarAreaChart = new Chart(ctx, {
+                type: 'line',
+                data: graphData
+            });
+            return polarAreaChart;
+
+        }
+    </script>
+
+{% endblock scripts %}

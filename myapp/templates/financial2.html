@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+       <meta charset="utf-8" />
+    <title>
+        {% block title %}
+       Financial Report
+        {% endblock title %}
+    </title>
+
+    <head>
+        <style>
+            body {
+                background-color: #d9e6d1;
+            }
+
+            h1 {
+                color: #ff000a;
+            }
+
+            p {
+                color: red;
+            }
+        </style>
+    </head>
+<title>Financial Report</title>
+    <div id="white" class="col-md-12 text-left">
+        <h2>Financial Report</h2>
+    <div id = "test" class="col-md-12 text-middle" style="color: #0b51c5">
+
+    </div>
+
+</div>
+    <body>
+<div id= main class="row">
+	<div class="pt-4 col-sm-6 pl-5">
+        <input type="text" placeholder="Enter Symbol" id="stock-symbol" name="symbol1"/>
+        <input onclick="getSymbol()" type="button" style="background-color: #2944cc ; font-size: 1.5vw" class="btn btn-primary" value = "View Details"/>
+    </div>
+</div>
+    </body>
+ {% endblock content %}
+
+{% block scripts %}
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'></script>
+    <script>
+
+    function getSymbol(){
+        var x = document.getElementById('stock-symbol').value;
+        urlA=`https://sandbox.iexapis.com/stable/stock/${x}/financials/?token=Tpk_087a52e2547e449e9cee8748f00491eb`;
+
+    $.ajax({
+
+        method: "GET",
+        url : urlA,
+        dataType: 'json',
+        success : onSucess,
+        error: onError
+    });
+    }
+
+    function onSucess(jsonReturn){
+            var temp = jsonReturn.financials[0];
+            console.log(temp);
+            var datee=temp.reportDate;
+            console.log(datee);
+            var profit=temp.grossProfit;
+            console.log(profit);
+            $("#test").html(jsonReturn.symbol+" Profit is : "+ profit);
+
+            $("#white").html(subtext);
+
+        }
+    function onError() {
+        $("#test").html("i failed.");
+    }
+    </script>
+
+
+
+{% endblock scripts %}

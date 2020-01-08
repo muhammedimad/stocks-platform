@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div id= "symb1" class="col-md-12 text-left">
+		<h2 id="symb2" class="display-4">
+				{{ data.companyName }}
+				<small id="symb3" class="text-muted" >({{ data.symbol }})</small>
+		</h2>
+</div>
+
+<div class="col-md-12 text-left">
+		<p class="lead">{{ data.primaryExchange }}</p>
+</div>
+
+<div class="col-md-12 text-left">
+	<span class="lead">
+	<big>
+			<h2 style="color: rgb(48, 82, 64)">Price: <span id='priceAjax' style="color: rgb(240, 140, 59)"></span></h2>
+			
+			<small class="lead">
+					{% if data.changePercent >= 0 %}
+									<span class="text-success">+{{ data.change }} (+{{ data.changePercent }}%)</span>
+							{% else %}
+									<span class="text-danger">{{ data.change }} ({{ data.changePercent }}%)</span>
+							{% endif %}
+			</small>
+	</big>
+	</span>
+	<br>
+	<small class="text-muted">Updated time: {{ data.latestTime }}</small>
+</div>
+<div class="row">
+	<div class="pt-4 col-sm-6 pl-5">
+		<dl class="row text-left">
+			<dt class="col-sm-6">Previous Close</dt>
+			<dd class="col-sm-6">{{ data.previousClose }}</dd>
+
+			<dt class="col-sm-6">Volume</dt>
+			<dd class="col-sm-6">{{ data.volume }}
+			</dd>
+
+			<dt class="col-sm-6">52 Weeks Low</dt>
+			<dd class="col-sm-6">{{ data.week52Low }}</dd>
+
+			<dt class="col-sm-6">52 Weeks High</dt>
+			<dd class="col-sm-6">{{ data.week52High }}</dd>
+
+			<dt class="col-sm-6">Year Change</dt>
+			<dd class="col-sm-6">{{ data.ytdChange }}</dd>
+
+			<dt class="col-sm-6">Market Cap</dt>
+			<dd class="col-sm-6">{{ data.marketCap }}</dd>
+
+			<dt class="col-sm-6">Currency</dt>
+			<dd class="col-sm-6">{{ data.currency }}</dd>
+			<br><br><br>
+		
+		</dl>
+		
+	</div>
+
+	
+
+	<div class="pt-4 col-sm-6">
+		<h3>Price over time</h3>
+		<canvas id="stockChart"></canvas>
+		<br>
+		<h3>Change over time</h3>
+		<canvas id="changeOverTime"></canvas>
+		<br>
+		<br>
+		<hr>
+<!-- 		
+    	{% for comment in comments %}
+    	<p>
+        date: {{comment.created_date }}&nbsp;
+        <b>{{ comment.author }}</b> wrote:
+    	</p>
+    	<p>{{ comment.text }}</p>
+    	<hr>
+    	{% endfor %} -->
+
+		 <!-- WIP TAB DESIGN
+		<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+		  <li class="nav-item">
+			<a class="nav-link" data-toggle="pill" href="#1w" role="tab" aria-controls="pills-home" aria-selected="true">1W</a>
+		  </li>
+		  <li class="nav-item">
+			<a class="nav-link active" data-toggle="pill" href="#1m" role="tab" aria-controls="pills-profile" aria-selected="false">1M</a>
+		  </li>
+		  <li class="nav-item">
+			<a class="nav-link" data-toggle="pill" href="#3m" role="tab" aria-controls="pills-contact" aria-selected="false">3M</a>
+		  </li>
+			<li class="nav-item">
+			<a class="nav-link" data-toggle="pill" href="#6m" role="tab" aria-controls="pills-contact" aria-selected="false">6M</a>
+		  </li>
+			<li class="nav-item">
+			<a class="nav-link" data-toggle="pill" href="#1y" role="tab" aria-controls="pills-contact" aria-selected="false">1Y</a>
+		  </li>
+			<li class="nav-item">
+			<a class="nav-link" data-toggle="pill" href="#max" role="tab" aria-controls="pills-contact" aria-selected="false">Max</a>
+		  </li>
+		</ul> -->
+		
+	</div>
+
+		<!-- <form action="{% url 'add_comment' %}" method="POST">
+			{% csrf_token %}
+			<br>
+			<input type="hidden" name="stock_symbol" value="{{ data.symbol }}" />
+			Name: <input type="text" name="name"/><br/>
+			<br>
+			Content:
+			<textarea cols="20" rows="4" name="content">
+			</textarea><br/>
+			<input type="submit" value="Post"/>
+			</form> -->
+</div>
+		{% for comment in comments %}
+		<div class="container_comments" style="text-align: left">
+		
+		<p><span >{{ comment.author }}.</span></p>
+		<p>{{ comment.text }}</p>
+        
+    	
+	
+  		</div>
+  		{% endfor %}
+  
+  
+<button class="open-button" onclick="openForm()">Write a comment</button>
+
+<div class="form-popup" id="myForm">
+  <form action="{% url 'add_comment' %}" method="POST" class="form-container">
+	{% csrf_token %}
+	
+    <h1>Comment</h1>
+
+    <input type="hidden" name="stock_symbol" value="{{ data.symbol }}" />
+    <input type="text" placeholder="Your Name" name="name"/>
+    <input type="text" placeholder="Comment" name="content"/>
+    <button type="submit" class="btn">Post</button>
+    <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+  </form>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+	function openForm() {
+	  document.getElementById("myForm").style.display = "block";
+	}
+	
+	function closeForm() {
+	  document.getElementById("myForm").style.display = "none";
+	}
+	</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+		<script>
+
+		function fetchdata(){
+			
+			var symbol = document.getElementById('symb3').innerText;
+			var symb = symbol.slice(1, -1);
+			
+
+		$.ajax({
+            url: 'https://sandbox.iexapis.com/stable/stock/'+symb+'/quote?token=Tpk_c818732500c24764801eb121fa658bb6',
+            datatype: 'json',
+            type: 'GET',
+            success: function(data) {
+				
+				console.log(data)
+                document.getElementById('priceAjax').innerHTML = data.latestPrice
+					
+            }
+        });
+		}
+		$(document).ready(function(){
+ 		setInterval(fetchdata,3000);
+			});
+	</script>
+	
+<script>
+
+	$(document).ready(function(){
+		$.get( "/historic/{{ data.symbol }}/", function( data ) {
+			historic_data = data.data.sort(function(a, b) { return a.date - b.date; })
+
+			var ctxL = document.getElementById("stockChart").getContext('2d');
+			var myLineChart = new Chart(ctxL, {
+				type: 'line',
+				data: {
+					labels: historic_data.map(d => d.label),
+					datasets: [
+						{
+							label: "{{ data.symbol }}",
+							data: historic_data.map(d => d.close),
+							backgroundColor: [
+								'rgba(105, 0, 132, .2)',
+							],
+							borderColor: [
+								'rgba(200, 99, 132, .7)',
+							],
+							borderWidth: 2
+						}
+					]
+				},
+				options: {
+					responsive: true
+				}
+			});
+		});
+	});
+
+	
+</script>
+<script>
+	$(document).ready(function(){
+	$.get( "/historic/{{ data.symbol }}/", function( data ) {
+			historic_data = data.data.sort(function(a, b) { return a.date - b.date; })
+
+			var ctxL = document.getElementById("changeOverTime").getContext('2d');
+			var myLineChart = new Chart(ctxL, {
+				type: 'line',
+				data: {
+					labels: historic_data.map(d => d.label),
+					datasets: [
+						{
+							label: "{{ data.symbol }}",
+							data: historic_data.map(d => d.changeOverTime),
+							backgroundColor: [
+								'rgba(0, 100, 50, .2)',
+							],
+							borderColor: [
+								'rgba(0, 200, 50, .7)',
+							],
+							borderWidth: 2
+						}
+					]
+				},
+				options: {
+					responsive: true
+				}
+			});
+		});
+	});
+
+</script>
+{% endblock %}

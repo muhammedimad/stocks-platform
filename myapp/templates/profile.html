@@ -1,0 +1,186 @@
+{% load static %}
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>
+        {% block title %}
+        {{ page_title|default:"Rails - Untitled Page" }}
+        {% endblock title %}
+    </title>
+
+    <!--####################### mohammad abdeen modifications #############################-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css"/>
+
+    <!--###################################################################-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+    <link href="{% static 'css/addons/datatables.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
+
+
+</head>
+
+<body>
+
+<div class="wrapper">
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div id="logo" class="navbar-brand"><a href="/"><img src="{% static 'logo.png' %}" alt="Project Rails"/></a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-item nav-link active" href="/">Home</a>
+                <a class="nav-item nav-link disabled" href="#">Exchange System</a>
+                <a class="nav-item nav-link disabled" href="#">Contact</a>
+            </div>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent-4">
+            <ul class="navbar-nav ml-auto">
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#">
+                        <i class="fa fa-cubes"></i> My Portfolio</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-4" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-user"></i> Profile </a>
+                    <div class="dropdown-menu dropdown-menu-right dropdown-info"
+                         aria-labelledby="navbarDropdownMenuLink-4">
+                        <a class="dropdown-item" href="{% url 'profile' %}">My account</a>
+                        <a class="dropdown-item" href="{% url 'logout' %}">Log out</a>
+                    </div>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'register' %}">
+                        <i class="fa fa-edit"></i> Register</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">
+                        <i class="fa fa-user"></i> Login</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+</div>
+<div class="wrapper">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css"/>
+
+
+    <div class="container" style="width:400px;">
+
+        <a href="{% url 'edit_profile' %}">update profile</a>
+
+
+        <form method="post" id="framework_form" enctype="multipart/form-data">
+            <div class="form-group">
+                <br><br/>
+                <img src="{{user.profile.image.url }}" width="240">
+
+
+                <h2 class="account-heading">{{ user.username }}</h2>
+                <p class="text-secondary">{{ user.email }}</p>
+
+                <p class="account-heading">JOB : {{ user.profile.job }}</p>
+
+
+            </div>
+
+        </form>
+
+
+        <br/>
+    </div>
+
+    <!--<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <!--<script type="text/javascript" src="{% static 'js/addons/datatables.min.js' %}"></script>-->
+    <!--<script type="text/javascript" src="{% static 'js/modules/chart.js' %}"></script>-->
+
+    <script type="text/javascript">s
+        function getOption() {
+            selectElement = document.querySelector('#fav_stocks');
+            output = selectElement.options[selectElement.selectedIndex].value;
+            document.querySelector('.output').textContent = output;
+        }
+
+
+
+    </script>
+
+    <script>
+    var fav_stocks;
+    function setStocksNames(){
+      fav_stocks = document.getElementById('fav_stocks').value;
+      alert(fav_stocks);
+}
+
+
+    </script>
+
+    <!--<script>-->
+            <!--$(document).ready(function(){-->
+                <!--$('.clickable-row').click(function(){-->
+                    <!--window.location = $(this).data('href');-->
+                <!--});-->
+            <!--});-->
+
+    <!---->
+    <!--</script>-->
+    <script>
+$(document).ready(function(){
+ $('#fav_stocks').multiselect({
+  nonSelectedText: 'Select Stocks',
+  enableFiltering: true,
+  enableCaseInsensitiveFiltering: true,
+  buttonWidth:'400px'
+ });
+ $('#framework_form').on('submit', function(event){
+  event.preventDefault();
+  var form_data = $(this).serialize();
+  $.ajax({
+   url:"insert.php",
+   method:"POST",
+   data:form_data,
+   success:function(data)
+   {
+    $('#framework option:selected').each(function(){
+     $(this).prop('selected', false);
+    });
+    $('#framework').multiselect('refresh');
+    alert(data);
+   }
+  });
+ });
+});
+
+
+    </script>
+
+</div>
+
+
+</body>
+</html>
